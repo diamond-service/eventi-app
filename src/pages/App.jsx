@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
@@ -28,4 +29,9 @@ export default function App() {
       ))}
     </div>
   );
+=======
+import React from 'react';
+export default function App() {
+  return <h1>🎉 Benvenuto in Eventi Livorno - Tutti gli Eventi</h1>;
+>>>>>>> 8870bc24a258d90e37240848134d2e882fc8ec4e
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
 "name": "eventi-livorno-admin",
 "version": "1.0.0",
@@ -17,3 +18,33 @@
 "@vitejs/plugin-react": "^4.0.0"
 }
 }
+=======
+{
+<<<<<<< HEAD
+  "name": "eventi-livorno-supabase",
+  "version": "1.0.0",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "react": "^18.0.0", "react-dom": "^18.0.0", "@supabase/supabase-js": "^2.0.0" },
+  "devDependencies": { "vite": "^5.0.0", "@vitejs/plugin-react": "^4.0.0" }
+}
+=======
+  "name": "eventi-livorno-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.14.2",
+    "@supabase/supabase-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "@vitejs/plugin-react": "^4.0.0"
+  }
+}
+>>>>>>> 73d3f95a564fccc036d1acbdc36f1ed625e2bc64
+>>>>>>> 8870bc24a258d90e37240848134d2e882fc8ec4e
