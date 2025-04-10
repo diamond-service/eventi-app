@@ -1,0 +1,1 @@
+import React from 'react'; export default function AdminLogin() { return <div className="p-4">🔐 Login area riservata</div>; }

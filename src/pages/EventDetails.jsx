@@ -1,0 +1,1 @@
+import React from 'react'; export default function EventDetails() { return <div className="p-4">📄 Dettagli evento (mappa, contatti, ecc)</div>; }

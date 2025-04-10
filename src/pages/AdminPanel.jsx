@@ -1,0 +1,1 @@
+import React from 'react'; export default function AdminPanel() { return <div className="p-4">⚙️ Pannello gestione eventi</div>; }
