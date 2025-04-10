@@ -1,4 +1,12 @@
 {
+<<<<<<< HEAD
+  "name": "eventi-livorno-supabase",
+  "version": "1.0.0",
+  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "dependencies": { "react": "^18.0.0", "react-dom": "^18.0.0", "@supabase/supabase-js": "^2.0.0" },
+  "devDependencies": { "vite": "^5.0.0", "@vitejs/plugin-react": "^4.0.0" }
+}
+=======
   "name": "eventi-livorno-app",
   "version": "1.0.0",
   "scripts": {
@@ -17,3 +25,4 @@
     "@vitejs/plugin-react": "^4.0.0"
   }
 }
+>>>>>>> 73d3f95a564fccc036d1acbdc36f1ed625e2bc64
