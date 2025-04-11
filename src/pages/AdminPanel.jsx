@@ -4,7 +4,16 @@ import BottomNav from '../components/BottomNav';
 
 export default function AdminPanel() {
   const [events, setEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({ title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '' });
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState({
+    title: '',
+    date: '',
+    location: '',
+    description: '',
+    mapUrl: '',
+    phone: '',
+    whatsapp: ''
+  });
 
   useEffect(() => {
     loadEvents();
@@ -15,17 +24,30 @@ export default function AdminPanel() {
     setEvents(data || []);
   };
 
-  const handleCreate = async () => {
-    await supabase.from('events').insert([newEvent]);
-    setNewEvent({ title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '' });
+  const handleSubmit = async () => {
+    if (editingId) {
+      // Modifica
+      await supabase.from('events').update(form).eq('id', editingId);
+    } else {
+      // Nuovo
+      await supabase.from('events').insert([form]);
+    }
+    setForm({
+      title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: ''
+    });
+    setEditingId(null);
     loadEvents();
+  };
+
+  const handleEdit = (event) => {
+    setForm(event);
+    setEditingId(event.id);
   };
 
   const handleDelete = async (id) => {
     await supabase.from('events').delete().eq('id', id);
     loadEvents();
   };
-
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">🎛️ Pannello Admin</h1>
@@ -44,8 +66,9 @@ export default function AdminPanel() {
         <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleCreate}>
           Aggiungi Evento
         </button>
-        <BottomNav />
+        
       </div>
+      <BottomNav />
 
       <div className="space-y-4">
         {events.map((event) => (
