@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
+import BottomNav from '../components/BottomNav';
 
 export default function App() {
   const [events, setEvents] = useState([]);
@@ -22,6 +23,7 @@ export default function App() {
           <div className="bg-white dark:bg-gray-800 border rounded-xl shadow-md p-4 mb-4 hover:shadow-xl transition">
             <h2 className="text-xl font-semibold">{event.title}</h2>
             <p className="text-gray-600 dark:text-gray-400 text-sm">{event.date} - {event.location}</p>
+            <BottomNav />
           </div>
         </Link>
       ))}
