@@ -1,0 +1,9 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Aggiunte personalizzate opzionali */
+body {
+  font-family: 'Arial', sans-serif;
+}
