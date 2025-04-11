@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
+import BottomNav from '../components/BottomNav';
 
 export default function AdminPanel() {
   const [events, setEvents] = useState([]);
@@ -43,6 +44,7 @@ export default function AdminPanel() {
         <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleCreate}>
           Aggiungi Evento
         </button>
+        <BottomNav />
       </div>
 
       <div className="space-y-4">
