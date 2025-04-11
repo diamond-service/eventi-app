@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import EventCard from '../components/EventCard';
 import useFavorites from '../hooks/useFavorites';
+import BottomNav from '../components/BottomNav';
 
 export default function Favorites() {
   const [events, setEvents] = useState([]);
@@ -25,6 +26,7 @@ export default function Favorites() {
         <EventCard key={event.id} event={event} />
       ))}
       {events.length === 0 && <p>Nessun preferito salvato.</p>}
+      <BottomNav />
     </div>
   );
 }
