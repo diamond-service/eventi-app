@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
 export default function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
@@ -22,6 +23,13 @@ export default function EventDetails() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-4">
+      <button
+        onClick={() => navigate(-1)}
+        className="text-sm text-blue-600 underline mb-2"
+      >
+        ← Torna Indietro
+      </button>
+
       {event.image && (
         <img
           src={event.image}
