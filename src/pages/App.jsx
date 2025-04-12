@@ -1,6 +1,6 @@
 // src/pages/App.jsx
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../supabaseClient';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 
