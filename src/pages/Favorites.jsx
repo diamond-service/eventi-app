@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../supabaseClient';
 import EventCard from '../components/EventCard';
 import useFavorites from '../hooks/useFavorites';
 import BottomNav from '../components/BottomNav';
