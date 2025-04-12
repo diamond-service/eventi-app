@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import BottomNav from '../components/BottomNav';
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -96,6 +97,7 @@ export default function EventDetails() {
           </a>
         )}
       </div>
+      <BottomNav />
     </div>
   );
 }
