@@ -18,6 +18,7 @@ export default function EventDetails() {
 
       if (!error && data) {
         setEvent(data);
+        console.log("✅ Dati evento da Supabase:", data);
 
         // 👁️ Incrementa visualizzazioni
         await supabase
