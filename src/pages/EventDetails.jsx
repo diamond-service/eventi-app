@@ -31,12 +31,15 @@ export default function EventDetails() {
       </button>
 
       {event.image && (
-        <img
-          src={event.image}
-          alt={event.title}
-          className="w-full h-64 object-cover rounded-xl shadow"
-        />
+        <div className="w-full h-64 bg-white rounded-xl shadow flex items-center justify-center overflow-hidden">
+          <img
+            src={event.image}
+            alt={event.title}
+            className="h-full object-contain"
+          />
+        </div>
       )}
+
 
       <h1 className="text-3xl font-bold">{event.title}</h1>
       <p className="text-sm text-gray-500">{event.date} - {event.location}</p>
