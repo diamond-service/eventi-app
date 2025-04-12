@@ -27,11 +27,6 @@ export default function App() {
             <p className="text-gray-600 dark:text-gray-400 text-sm">{event.date} - {event.location}</p>
             <BottomNav />
           </div>
-          <Routes>
-            <Route path="/" element={<App />} />
-              <Route path="/admin" element={<AdminLogin />} />
-              <Route path="/admin/pannello" element={<AdminPanel />} />
-          </Routes>
         </Link>
       ))}
     </div>
