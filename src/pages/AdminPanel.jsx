@@ -1,8 +1,11 @@
+// src/pages/AdminPanel.jsx
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminPanel() {
+  const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
@@ -15,13 +18,23 @@ export default function AdminPanel() {
     whatsapp: ''
   });
 
+  const navigate = useNavigate();
+
+  // 🔐 Verifica autenticazione
   useEffect(() => {
-    loadEvents();
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data?.user) {
+        navigate('/admin-login'); // 👈 Se non loggato, vai al login
+      } else {
+        setUser(data.user);
+        loadEvents();
+      }
+    });
   }, []);
 
   const loadEvents = async () => {
-    const { data } = await supabase.from('events').select('*');
-    setEvents(data || []);
+    const { data, error } = await supabase.from('events').select('*');
+    if (!error) setEvents(data || []);
   };
 
   const handleSubmit = async () => {
@@ -48,9 +61,12 @@ export default function AdminPanel() {
     loadEvents();
   };
 
+  if (!user) return null; // Evita flicker visivo se non loggato
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">🎛️ Pannello Admin</h1>
+      <p className="text-green-600 mb-4">✅ Sei loggato come <b>{user.email}</b></p>
 
       <div className="bg-white p-4 rounded shadow mb-6 space-y-2">
         <h2 className="text-lg font-semibold">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
