@@ -17,6 +17,7 @@ export default function EventDetails() {
 
       if (!error && data) {
         setEvent(data);
+
         // 👁️ Incrementa visualizzazioni
         await supabase
           .from('events')
@@ -51,6 +52,17 @@ export default function EventDetails() {
       <h1 className="text-3xl font-bold">{event.title}</h1>
       <p className="text-sm text-gray-500">{event.date} - {event.location}</p>
       <p className="text-sm text-gray-400">👁️ {event.views || 0} visualizzazioni</p>
+
+      {event.price && (
+        <p className="text-sm text-gray-700">💰 Prezzo: <b>{event.price}€</b></p>
+      )}
+
+      {event.dinnerIncluded && (
+        <p className="text-sm text-gray-700">
+          🍽️ Cena inclusa: <b>{event.dinnerPrice ? `${event.dinnerPrice}€` : 'Compresa'}</b>
+        </p>
+      )}
+
       <p className="text-gray-700">{event.description}</p>
 
       {event.mapUrl && (
