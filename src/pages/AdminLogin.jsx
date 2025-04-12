@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,19 +8,32 @@ export default function AdminLogin() {
   const [usePassword, setUsePassword] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Se l'admin è già loggato, vai direttamente al pannello
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) navigate('/admin');
+    });
+  }, []);
+
   const loginWithOTP = async () => {
+    if (!email) return alert('Inserisci la tua email.');
     const { error } = await supabase.auth.signInWithOtp({ email });
-    if (!error) alert('📩 Controlla la tua email per il link di accesso!');
+    if (!error) {
+      alert('📩 Controlla la tua email per il link di accesso!');
+    } else {
+      alert('❌ Errore login OTP: ' + error.message);
+    }
   };
 
   const loginWithPassword = async () => {
+    if (!email || !password) return alert('Inserisci email e password.');
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (data?.user) {
-    navigate('/admin'); // ✅ vai al pannello
+      navigate('/admin');
     } else {
-    alert('❌ Login fallito: ' + error.message);
+      alert('❌ Login fallito: ' + (error?.message || 'Credenziali non valide'));
     }
-    };
+  };
 
   return (
     <div className="p-4 max-w-md mx-auto mt-10 bg-white shadow rounded-xl">
