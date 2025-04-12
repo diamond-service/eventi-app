@@ -1,4 +1,3 @@
-// src/pages/AdminPanel.jsx
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
@@ -16,7 +15,10 @@ export default function AdminPanel() {
     mapUrl: '',
     phone: '',
     whatsapp: '',
-    image: ''
+    image: '',
+    price: '',
+    dinnerIncluded: false,
+    dinnerPrice: ''
   });
 
   const navigate = useNavigate();
@@ -53,7 +55,7 @@ export default function AdminPanel() {
       alert('❌ Errore: ' + error.message);
     } else {
       setForm({
-        title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: ''
+        title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
       });
       setEditingId(null);
       loadEvents();
@@ -69,7 +71,10 @@ export default function AdminPanel() {
       mapUrl: event.mapUrl || '',
       phone: event.phone || '',
       whatsapp: event.whatsapp || '',
-      image: event.image || ''
+      image: event.image || '',
+      price: event.price || '',
+      dinnerIncluded: event.dinnerIncluded || false,
+      dinnerPrice: event.dinnerPrice || ''
     });
     setEditingId(event.id);
   };
@@ -113,18 +118,8 @@ export default function AdminPanel() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">🎛️ Pannello Admin</h1>
         <div className="flex gap-2">
-          <button
-            className="text-sm text-red-600 underline"
-            onClick={handleLogout}
-          >
-            🔓 Logout
-          </button>
-          <Link
-            to="/"
-            className="text-sm text-blue-600 underline"
-          >
-            🏠 Home
-          </Link>
+          <button className="text-sm text-red-600 underline" onClick={handleLogout}>🔓 Logout</button>
+          <Link to="/" className="text-sm text-blue-600 underline">🏠 Home</Link>
         </div>
       </div>
 
@@ -134,7 +129,7 @@ export default function AdminPanel() {
         <h2 className="text-lg font-semibold">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
 
         {Object.entries(form).map(([key, value]) => (
-          key !== 'image' && (
+          key !== 'image' && key !== 'dinnerIncluded' && (
             <input
               key={key}
               className="w-full p-2 border rounded mb-2"
@@ -144,6 +139,15 @@ export default function AdminPanel() {
             />
           )
         ))}
+
+        <div className="flex items-center gap-2 mb-2">
+          <input
+            type="checkbox"
+            checked={form.dinnerIncluded}
+            onChange={(e) => setForm({ ...form, dinnerIncluded: e.target.checked })}
+          />
+          <label>Cena Inclusa</label>
+        </div>
 
         <input
           type="file"
@@ -170,6 +174,8 @@ export default function AdminPanel() {
               <div className="w-full">
                 <h3 className="font-semibold">{event.title}</h3>
                 <p className="text-sm text-gray-600">{event.date} - {event.location}</p>
+                {event.price && <p className="text-sm text-gray-500">💰 Prezzo: {event.price}€</p>}
+                {event.dinnerIncluded && <p className="text-sm text-gray-500">🍽️ Cena: {event.dinnerPrice || 'Inclusa'}</p>}
                 {event.image && (
                   <img src={event.image} alt={event.title} className="w-full h-32 object-cover rounded mt-2" />
                 )}
