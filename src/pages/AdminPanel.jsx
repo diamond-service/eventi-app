@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
 
-export default function AdminLogin() {
+export default function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
@@ -26,12 +26,11 @@ export default function AdminLogin() {
 
   const handleSubmit = async () => {
     if (editingId) {
-      // Modifica
       await supabase.from('events').update(form).eq('id', editingId);
     } else {
-      // Nuovo
       await supabase.from('events').insert([form]);
     }
+
     setForm({
       title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: ''
     });
@@ -48,27 +47,26 @@ export default function AdminLogin() {
     await supabase.from('events').delete().eq('id', id);
     loadEvents();
   };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">🎛️ Pannello Admin</h1>
 
       <div className="bg-white p-4 rounded shadow mb-6 space-y-2">
-        <h2 className="text-lg font-semibold">Crea nuovo evento</h2>
-        {Object.keys(newEvent).map((key) => (
+        <h2 className="text-lg font-semibold">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
+        {Object.keys(form).map((key) => (
           <input
             key={key}
             className="w-full p-2 border rounded mb-2"
             placeholder={key}
-            value={newEvent[key]}
-            onChange={(e) => setNewEvent({ ...newEvent, [key]: e.target.value })}
+            value={form[key]}
+            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
           />
         ))}
-        <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleCreate}>
-          Aggiungi Evento
+        <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleSubmit}>
+          {editingId ? 'Salva Modifiche' : 'Aggiungi Evento'}
         </button>
-        
       </div>
-      <BottomNav />
 
       <div className="space-y-4">
         {events.map((event) => (
@@ -77,12 +75,19 @@ export default function AdminLogin() {
               <h3 className="font-semibold">{event.title}</h3>
               <p className="text-sm text-gray-600">{event.date} - {event.location}</p>
             </div>
-            <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(event.id)}>
-              Elimina
-            </button>
+            <div className="flex gap-2">
+              <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => handleEdit(event)}>
+                Modifica
+              </button>
+              <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(event.id)}>
+                Elimina
+              </button>
+            </div>
           </div>
         ))}
       </div>
+
+      <BottomNav />
     </div>
   );
 }
