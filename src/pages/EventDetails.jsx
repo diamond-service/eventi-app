@@ -96,6 +96,10 @@ export default function EventDetails() {
             💬 WhatsApp
           </a>
         )}
+        {!event.phone && !event.whatsapp && (
+          <p className="text-sm text-red-600">📭 Contatti non disponibili per questo evento.</p>
+        )}
+
       </div>
       <BottomNav />
     </div>
