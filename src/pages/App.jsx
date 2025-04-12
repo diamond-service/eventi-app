@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
+import AdminLogin from './pages/AdminLogin';
+import AdminPanel from './pages/AdminPanel';
 
 export default function App() {
   const [events, setEvents] = useState([]);
@@ -25,6 +27,11 @@ export default function App() {
             <p className="text-gray-600 dark:text-gray-400 text-sm">{event.date} - {event.location}</p>
             <BottomNav />
           </div>
+          <Routes>
+            <Route path="/" element={<App />} />
+              <Route path="/admin" element={<AdminLogin />} />
+              <Route path="/admin/pannello" element={<AdminPanel />} />
+          </Routes>
         </Link>
       ))}
     </div>
