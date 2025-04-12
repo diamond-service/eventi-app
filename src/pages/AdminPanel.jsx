@@ -21,43 +21,61 @@ export default function AdminPanel() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
+    const checkAuthAndLoad = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) console.error('Errore auth:', error);
       if (!data?.user) {
         navigate('/admin-login');
       } else {
         setUser(data.user);
         loadEvents();
       }
-    });
+    };
+    checkAuthAndLoad();
   }, []);
 
   const loadEvents = async () => {
     const { data, error } = await supabase.from('events').select('*');
-    if (!error) setEvents(data || []);
+    if (error) {
+      console.error('Errore caricamento eventi:', error.message);
+    } else {
+      setEvents(data || []);
+    }
   };
 
   const handleSubmit = async () => {
-    if (editingId) {
-      await supabase.from('events').update(form).eq('id', editingId);
-    } else {
-      await supabase.from('events').insert([form]);
-    }
+    const { error } = editingId
+      ? await supabase.from('events').update(form).eq('id', editingId)
+      : await supabase.from('events').insert([form]);
 
-    setForm({
-      title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: ''
-    });
-    setEditingId(null);
-    loadEvents();
+    if (error) {
+      alert('❌ Errore: ' + error.message);
+    } else {
+      setForm({
+        title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: ''
+      });
+      setEditingId(null);
+      loadEvents();
+    }
   };
 
   const handleEdit = (event) => {
-    setForm(event);
+    setForm({
+      title: event.title || '',
+      date: event.date || '',
+      location: event.location || '',
+      description: event.description || '',
+      mapUrl: event.mapUrl || '',
+      phone: event.phone || '',
+      whatsapp: event.whatsapp || ''
+    });
     setEditingId(event.id);
   };
 
   const handleDelete = async (id) => {
-    await supabase.from('events').delete().eq('id', id);
-    loadEvents();
+    const { error } = await supabase.from('events').delete().eq('id', id);
+    if (error) alert('❌ Errore eliminazione: ' + error.message);
+    else loadEvents();
   };
 
   const handleLogout = async () => {
@@ -65,7 +83,13 @@ export default function AdminPanel() {
     navigate('/admin-login');
   };
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <div className="text-center p-8">
+        <p className="text-gray-500">🔐 Controllo autenticazione in corso...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -91,37 +115,41 @@ export default function AdminPanel() {
 
       <div className="bg-white p-4 rounded shadow mb-6 space-y-2">
         <h2 className="text-lg font-semibold">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
-        {Object.keys(form).map((key) => (
+        {Object.entries(form).map(([key, value]) => (
           <input
             key={key}
             className="w-full p-2 border rounded mb-2"
             placeholder={key}
-            value={form[key]}
+            value={value}
             onChange={(e) => setForm({ ...form, [key]: e.target.value })}
           />
         ))}
         <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleSubmit}>
-          {editingId ? 'Salva Modifiche' : 'Aggiungi Evento'}
+          {editingId ? '💾 Salva Modifiche' : '➕ Aggiungi Evento'}
         </button>
       </div>
 
       <div className="space-y-4">
-        {events.map((event) => (
-          <div key={event.id} className="bg-gray-100 p-4 rounded shadow flex justify-between items-center">
-            <div>
-              <h3 className="font-semibold">{event.title}</h3>
-              <p className="text-sm text-gray-600">{event.date} - {event.location}</p>
+        {events.length === 0 ? (
+          <p className="text-gray-500">📭 Nessun evento disponibile.</p>
+        ) : (
+          events.map((event) => (
+            <div key={event.id} className="bg-gray-100 p-4 rounded shadow flex justify-between items-center">
+              <div>
+                <h3 className="font-semibold">{event.title}</h3>
+                <p className="text-sm text-gray-600">{event.date} - {event.location}</p>
+              </div>
+              <div className="flex gap-2">
+                <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => handleEdit(event)}>
+                  ✏️ Modifica
+                </button>
+                <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(event.id)}>
+                  🗑️ Elimina
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => handleEdit(event)}>
-                Modifica
-              </button>
-              <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(event.id)}>
-                Elimina
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       <BottomNav />
