@@ -1,4 +1,3 @@
-// src/pages/AdminPanel.jsx
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
@@ -15,7 +14,8 @@ export default function AdminPanel() {
     description: '',
     mapUrl: '',
     phone: '',
-    whatsapp: ''
+    whatsapp: '',
+    image: ''
   });
 
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export default function AdminPanel() {
       alert('❌ Errore: ' + error.message);
     } else {
       setForm({
-        title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: ''
+        title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: ''
       });
       setEditingId(null);
       loadEvents();
@@ -67,7 +67,8 @@ export default function AdminPanel() {
       description: event.description || '',
       mapUrl: event.mapUrl || '',
       phone: event.phone || '',
-      whatsapp: event.whatsapp || ''
+      whatsapp: event.whatsapp || '',
+      image: event.image || ''
     });
     setEditingId(event.id);
   };
@@ -81,6 +82,21 @@ export default function AdminPanel() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/admin-login');
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const fileName = `${Date.now()}-${file.name}`;
+    const { data, error } = await supabase.storage.from('eventi').upload(fileName, file);
+
+    if (!error) {
+      const { data: publicUrlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
+      setForm({ ...form, image: publicUrlData.publicUrl });
+    } else {
+      alert('❌ Errore upload immagine');
+    }
   };
 
   if (!user) {
@@ -115,15 +131,31 @@ export default function AdminPanel() {
 
       <div className="bg-white p-4 rounded shadow mb-6 space-y-2">
         <h2 className="text-lg font-semibold">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
+
         {Object.entries(form).map(([key, value]) => (
-          <input
-            key={key}
-            className="w-full p-2 border rounded mb-2"
-            placeholder={key}
-            value={value}
-            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-          />
+          key !== 'image' && (
+            <input
+              key={key}
+              className="w-full p-2 border rounded mb-2"
+              placeholder={key}
+              value={value}
+              onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+            />
+          )
         ))}
+
+        {/* Upload immagine */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="w-full p-2 border rounded mb-2"
+        />
+
+        {form.image && (
+          <img src={form.image} alt="Anteprima" className="w-full h-48 object-cover rounded mb-2" />
+        )}
+
         <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleSubmit}>
           {editingId ? '💾 Salva Modifiche' : '➕ Aggiungi Evento'}
         </button>
@@ -135,11 +167,14 @@ export default function AdminPanel() {
         ) : (
           events.map((event) => (
             <div key={event.id} className="bg-gray-100 p-4 rounded shadow flex justify-between items-center">
-              <div>
+              <div className="w-full">
                 <h3 className="font-semibold">{event.title}</h3>
                 <p className="text-sm text-gray-600">{event.date} - {event.location}</p>
+                {event.image && (
+                  <img src={event.image} alt={event.title} className="w-full h-32 object-cover rounded mt-2" />
+                )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 ml-4">
                 <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => handleEdit(event)}>
                   ✏️ Modifica
                 </button>
