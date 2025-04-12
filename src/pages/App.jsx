@@ -14,6 +14,22 @@ export default function App() {
     };
     fetchEvents();
   }, []);
+  const [newEvent, setNewEvent] = useState({
+  title: '',
+  category: '',
+  date: '',
+  location: '',
+  image: '',
+  description: '',
+  price: '',
+  dinnerIncluded: false,
+  dinnerPrice: '',
+  phone: '',
+  whatsapp: '',
+  mapUrl: '',
+  highlight: false,
+});
+
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
