@@ -78,29 +78,22 @@ export default function EventDetails() {
       )}
 
       <div className="flex flex-col sm:flex-row gap-4 mb-24">
-        {event.phone && (
-          <a
-            href={`tel:${event.phone}`}
-            className="bg-green-600 text-white text-center px-4 py-2 rounded"
-          >
-            📞 Chiama
-          </a>
-        )}
-        {event.whatsapp && (
-          <a
-            href={`https://wa.me/${event.whatsapp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-green-500 text-white text-center px-4 py-2 rounded"
-          >
-            💬 WhatsApp
-          </a>
-        )}
-        {!event.phone && !event.whatsapp && (
-          <p className="text-sm text-red-600">📭 Contatti non disponibili per questo evento.</p>
-        )}
-
+        <a
+          href={`tel:${event.phone || '0586000000'}`}
+          className="bg-green-600 text-white text-center px-4 py-2 rounded"
+        >
+          📞 Chiama
+        </a>
+        <a
+          href={`https://wa.me/${event.whatsapp || '393330000000'}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-500 text-white text-center px-4 py-2 rounded"
+        >
+          💬 WhatsApp
+        </a>
       </div>
+
       <BottomNav />
     </div>
   );
