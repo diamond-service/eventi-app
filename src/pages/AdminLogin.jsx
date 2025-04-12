@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../supabaseClient.js';
 import { useNavigate } from 'react-router-dom';
 
 export default function AdminLogin() {
