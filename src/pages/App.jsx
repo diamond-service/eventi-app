@@ -28,7 +28,7 @@ export default function App() {
   whatsapp: '',
   mapUrl: '',
   highlight: false,
-});
+  });
 
 
   return (
