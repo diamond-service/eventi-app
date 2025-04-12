@@ -8,12 +8,12 @@ export default function App() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      const { data, error } = await supabase.from('events').select('*');
-      if (!error) setEvents(data);
-    };
-    fetchEvents();
-  }, []);
+ //   const fetchEvents = async () => {
+ //     const { data, error } = await supabase.from('events').select('*');
+ //     if (!error) setEvents(data);
+ //   };
+ //   fetchEvents();
+  // }, []);
   const [newEvent, setNewEvent] = useState({
   title: '',
   category: '',
