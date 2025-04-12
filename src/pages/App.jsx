@@ -7,7 +7,7 @@ import BottomNav from '../components/BottomNav';
 export default function App() {
   const [events, setEvents] = useState([]);
 
-  useEffect(() => {
+ // useEffect(() => {
  //   const fetchEvents = async () => {
  //     const { data, error } = await supabase.from('events').select('*');
  //     if (!error) setEvents(data);
