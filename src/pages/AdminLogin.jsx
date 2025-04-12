@@ -15,9 +15,12 @@ export default function AdminLogin() {
 
   const loginWithPassword = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (data?.user) navigate('/admin');
-    else alert('Errore: ' + (error?.message || 'Credenziali non valide'));
-  };
+    if (data?.user) {
+    navigate('/admin'); // ✅ vai al pannello
+    } else {
+    alert('❌ Login fallito: ' + error.message);
+    }
+    };
 
   return (
     <div className="p-4 max-w-md mx-auto mt-10 bg-white shadow rounded-xl">
