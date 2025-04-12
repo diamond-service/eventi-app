@@ -9,12 +9,20 @@ export default function EventDetails() {
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('events')
         .select('*')
         .eq('id', id)
         .single();
-      setEvent(data);
+
+      if (!error && data) {
+        setEvent(data);
+        // 👁️ Incrementa visualizzazioni
+        await supabase
+          .from('events')
+          .update({ views: (data.views || 0) + 1 })
+          .eq('id', id);
+      }
     };
     load();
   }, [id]);
@@ -40,9 +48,9 @@ export default function EventDetails() {
         </div>
       )}
 
-
       <h1 className="text-3xl font-bold">{event.title}</h1>
       <p className="text-sm text-gray-500">{event.date} - {event.location}</p>
+      <p className="text-sm text-gray-400">👁️ {event.views || 0} visualizzazioni</p>
       <p className="text-gray-700">{event.description}</p>
 
       {event.mapUrl && (
