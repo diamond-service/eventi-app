@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function AdminPanel() {
   const [user, setUser] = useState(null);
@@ -20,11 +20,10 @@ export default function AdminPanel() {
 
   const navigate = useNavigate();
 
-  // 🔐 Verifica autenticazione
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (!data?.user) {
-        navigate('/admin-login'); // 👈 Se non loggato, vai al login
+        navigate('/admin-login');
       } else {
         setUser(data.user);
         loadEvents();
@@ -61,11 +60,33 @@ export default function AdminPanel() {
     loadEvents();
   };
 
-  if (!user) return null; // Evita flicker visivo se non loggato
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/admin-login');
+  };
+
+  if (!user) return null;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">🎛️ Pannello Admin</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">🎛️ Pannello Admin</h1>
+        <div className="flex gap-2">
+          <button
+            className="text-sm text-red-600 underline"
+            onClick={handleLogout}
+          >
+            🔓 Logout
+          </button>
+          <Link
+            to="/"
+            className="text-sm text-blue-600 underline"
+          >
+            🏠 Home
+          </Link>
+        </div>
+      </div>
+
       <p className="text-green-600 mb-4">✅ Sei loggato come <b>{user.email}</b></p>
 
       <div className="bg-white p-4 rounded shadow mb-6 space-y-2">
