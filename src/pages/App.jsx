@@ -13,7 +13,7 @@ export default function App() {
  //     if (!error) setEvents(data);
  //   };
  //   fetchEvents();
-  // }, []);
+ // }, []);
   const [newEvent, setNewEvent] = useState({
   title: '',
   category: '',
