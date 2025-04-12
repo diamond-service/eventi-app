@@ -77,7 +77,7 @@ export default function EventDetails() {
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 mb-24">
         {event.phone && (
           <a
             href={`tel:${event.phone}`}
