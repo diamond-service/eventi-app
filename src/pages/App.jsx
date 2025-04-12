@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import { Link } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
-import AdminLogin from './pages/AdminLogin';
-import AdminPanel from './pages/AdminPanel';
 
 export default function App() {
   const [events, setEvents] = useState([]);
