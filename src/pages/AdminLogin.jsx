@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import BottomNav from '../components/BottomNav';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -8,25 +9,12 @@ export default function AdminLogin() {
   const [usePassword, setUsePassword] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Se l'admin è già loggato, vai direttamente al pannello
-    supabase.auth.getUser().then(({ data }) => {
-      if (data?.user) navigate('/admin');
-    });
-  }, []);
-
   const loginWithOTP = async () => {
-    if (!email) return alert('Inserisci la tua email.');
     const { error } = await supabase.auth.signInWithOtp({ email });
-    if (!error) {
-      alert('📩 Controlla la tua email per il link di accesso!');
-    } else {
-      alert('❌ Errore login OTP: ' + error.message);
-    }
+    if (!error) alert('📩 Controlla la tua email per il link di accesso!');
   };
 
   const loginWithPassword = async () => {
-    if (!email || !password) return alert('Inserisci email e password.');
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (data?.user) {
       navigate('/admin');
@@ -36,42 +24,47 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto mt-10 bg-white shadow rounded-xl">
-      <h2 className="text-xl font-bold mb-4 text-center">🔐 Login Amministratore</h2>
+    <div className="p-4 max-w-md mx-auto mt-10 space-y-4">
+      <div className="bg-white shadow rounded-xl p-6">
+        <h2 className="text-xl font-bold mb-4 text-center">🔐 Login Amministratore</h2>
 
-      <div className="space-y-3">
-        <input
-          className="w-full p-2 border rounded"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        {usePassword && (
+        <div className="space-y-3">
           <input
             className="w-full p-2 border rounded"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
-        )}
 
-        <button
-          onClick={usePassword ? loginWithPassword : loginWithOTP}
-          className="bg-red-600 text-white px-4 py-2 w-full rounded"
-        >
-          {usePassword ? 'Accedi con Password' : 'Invia link di accesso'}
-        </button>
+          {usePassword && (
+            <input
+              className="w-full p-2 border rounded"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          )}
 
-        <button
-          className="text-sm text-blue-500 underline w-full mt-2"
-          onClick={() => setUsePassword(!usePassword)}
-        >
-          {usePassword ? '↩️ Torna a login via Email' : '🔑 Hai una password? Clicca qui'}
-        </button>
+          <button
+            onClick={usePassword ? loginWithPassword : loginWithOTP}
+            className="bg-red-600 text-white px-4 py-2 w-full rounded"
+          >
+            {usePassword ? 'Accedi con Password' : 'Invia link di accesso'}
+          </button>
+
+          <button
+            className="text-sm text-blue-500 underline w-full mt-2"
+            onClick={() => setUsePassword(!usePassword)}
+          >
+            {usePassword ? '↩️ Torna a login via Email' : '🔑 Hai una password? Clicca qui'}
+          </button>
+        </div>
       </div>
+
+      {/* ✅ BottomNav visibile anche qui */}
+      <BottomNav />
     </div>
   );
 }
