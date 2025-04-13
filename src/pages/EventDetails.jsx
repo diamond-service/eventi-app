@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
 
 export default function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const load = async () => {
@@ -30,23 +29,13 @@ export default function EventDetails() {
   if (!event) return <div className="p-6 text-center">⏳ Caricamento evento...</div>;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-4 pb-28">
-      <button
-        onClick={() => navigate(-1)}
-        className="text-sm text-blue-600 underline mb-2 inline-flex items-center"
-      >
-        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-        Torna Indietro
-      </button>
-
+    <div className="p-6 max-w-2xl mx-auto space-y-4 pb-24">
       {event.image && (
-        <div className="w-full h-64 rounded-xl shadow overflow-hidden">
+        <div className="w-full h-64 bg-white rounded-xl shadow overflow-hidden">
           <img
             src={event.image}
             alt={event.title}
-            className="w-full h-full object-contain bg-white"
+            className="h-full w-full object-cover"
           />
         </div>
       )}
@@ -56,9 +45,7 @@ export default function EventDetails() {
       <p className="text-sm text-gray-400">👁️ {event.views || 0} visualizzazioni</p>
 
       {event.price && (
-        <p className="text-sm text-gray-700">
-          💰 Prezzo: <b>{event.price}€</b>
-        </p>
+        <p className="text-sm text-gray-700">💰 Prezzo: <b>{event.price}€</b></p>
       )}
 
       {event.dinnerIncluded && (
@@ -67,10 +54,10 @@ export default function EventDetails() {
         </p>
       )}
 
-      <p className="text-gray-700 whitespace-pre-line">{event.description}</p>
+      <p className="text-gray-700">{event.description}</p>
 
       {event.mapUrl && (
-        <div className="mt-4">
+        <div>
           <iframe
             src={event.mapUrl}
             className="w-full h-64 rounded-xl border"
@@ -81,28 +68,26 @@ export default function EventDetails() {
         </div>
       )}
 
-      {(event.phone || event.whatsapp) && (
-        <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          {event.phone && (
-            <a
-              href={`tel:${event.phone}`}
-              className="flex-1 bg-green-600 text-white text-center px-4 py-2 rounded shadow hover:brightness-105 transition"
-            >
-              📞 Chiama
-            </a>
-          )}
-          {event.whatsapp && (
-            <a
-              href={`https://wa.me/${event.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 bg-green-500 text-white text-center px-4 py-2 rounded shadow hover:brightness-105 transition"
-            >
-              💬 WhatsApp
-            </a>
-          )}
-        </div>
-      )}
+      <div className="flex flex-col sm:flex-row gap-4">
+        {event.phone && (
+          <a
+            href={`tel:${event.phone}`}
+            className="bg-green-600 text-white text-center px-4 py-2 rounded"
+          >
+            📞 Chiama
+          </a>
+        )}
+        {event.whatsapp && (
+          <a
+            href={`https://wa.me/${event.whatsapp}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-green-500 text-white text-center px-4 py-2 rounded"
+          >
+            💬 WhatsApp
+          </a>
+        )}
+      </div>
 
       <BottomNav />
     </div>
