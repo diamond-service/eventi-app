@@ -1,9 +1,7 @@
-// src/pages/EventDetails.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
-import { PhoneCall, MessageCircleMore } from 'lucide-react';
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -20,8 +18,6 @@ export default function EventDetails() {
 
       if (!error && data) {
         setEvent(data);
-        console.log("✅ Dati evento da Supabase:", data);
-
         await supabase
           .from('events')
           .update({ views: (data.views || 0) + 1 })
@@ -34,20 +30,23 @@ export default function EventDetails() {
   if (!event) return <div className="p-6 text-center">⏳ Caricamento evento...</div>;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-4">
+    <div className="p-6 max-w-2xl mx-auto space-y-4 pb-28">
       <button
         onClick={() => navigate(-1)}
-        className="text-sm text-blue-600 underline mb-2"
+        className="text-sm text-blue-600 underline mb-2 inline-flex items-center"
       >
-        ← Torna Indietro
+        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Torna Indietro
       </button>
 
       {event.image && (
-        <div className="w-full h-64 bg-white rounded-xl shadow flex items-center justify-center overflow-hidden">
+        <div className="w-full h-64 rounded-xl shadow overflow-hidden">
           <img
             src={event.image}
             alt={event.title}
-            className="h-full object-contain"
+            className="w-full h-full object-contain bg-white"
           />
         </div>
       )}
@@ -57,7 +56,9 @@ export default function EventDetails() {
       <p className="text-sm text-gray-400">👁️ {event.views || 0} visualizzazioni</p>
 
       {event.price && (
-        <p className="text-sm text-gray-700">💰 Prezzo: <b>{event.price}€</b></p>
+        <p className="text-sm text-gray-700">
+          💰 Prezzo: <b>{event.price}€</b>
+        </p>
       )}
 
       {event.dinnerIncluded && (
@@ -69,24 +70,25 @@ export default function EventDetails() {
       <p className="text-gray-700 whitespace-pre-line">{event.description}</p>
 
       {event.mapUrl && (
-        <div>
+        <div className="mt-4">
           <iframe
             src={event.mapUrl}
             className="w-full h-64 rounded-xl border"
             allowFullScreen=""
             loading="lazy"
+            title="Mappa evento"
           />
         </div>
       )}
 
-      {(event.phone || event.whatsapp) ? (
-        <div className="flex flex-col sm:flex-row gap-4 mb-24">
+      {(event.phone || event.whatsapp) && (
+        <div className="flex flex-col sm:flex-row gap-4 mt-6">
           {event.phone && (
             <a
               href={`tel:${event.phone}`}
-              className="bg-green-600 hover:bg-green-700 transition text-white text-center px-4 py-2 rounded flex items-center justify-center gap-2"
+              className="flex-1 bg-green-600 text-white text-center px-4 py-2 rounded shadow hover:brightness-105 transition"
             >
-              <PhoneCall size={18} /> Chiama
+              📞 Chiama
             </a>
           )}
           {event.whatsapp && (
@@ -94,14 +96,12 @@ export default function EventDetails() {
               href={`https://wa.me/${event.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-green-500 hover:bg-green-600 transition text-white text-center px-4 py-2 rounded flex items-center justify-center gap-2"
+              className="flex-1 bg-green-500 text-white text-center px-4 py-2 rounded shadow hover:brightness-105 transition"
             >
-              <MessageCircleMore size={18} /> WhatsApp
+              💬 WhatsApp
             </a>
           )}
         </div>
-      ) : (
-        <p className="text-sm text-gray-500 mb-24">📭 Nessun contatto disponibile</p>
       )}
 
       <BottomNav />
