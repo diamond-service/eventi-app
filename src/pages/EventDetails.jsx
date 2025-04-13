@@ -1,7 +1,9 @@
+// src/pages/EventDetails.jsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
+import { PhoneCall, MessageCircleMore } from 'lucide-react';
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -20,7 +22,6 @@ export default function EventDetails() {
         setEvent(data);
         console.log("✅ Dati evento da Supabase:", data);
 
-        // 👁️ Incrementa visualizzazioni
         await supabase
           .from('events')
           .update({ views: (data.views || 0) + 1 })
@@ -65,7 +66,7 @@ export default function EventDetails() {
         </p>
       )}
 
-      <p className="text-gray-700">{event.description}</p>
+      <p className="text-gray-700 whitespace-pre-line">{event.description}</p>
 
       {event.mapUrl && (
         <div>
@@ -78,14 +79,14 @@ export default function EventDetails() {
         </div>
       )}
 
-      {(event.phone || event.whatsapp) && (
+      {(event.phone || event.whatsapp) ? (
         <div className="flex flex-col sm:flex-row gap-4 mb-24">
           {event.phone && (
             <a
               href={`tel:${event.phone}`}
-              className="bg-green-600 text-white text-center px-4 py-2 rounded"
+              className="bg-green-600 hover:bg-green-700 transition text-white text-center px-4 py-2 rounded flex items-center justify-center gap-2"
             >
-              📞 Chiama
+              <PhoneCall size={18} /> Chiama
             </a>
           )}
           {event.whatsapp && (
@@ -93,14 +94,15 @@ export default function EventDetails() {
               href={`https://wa.me/${event.whatsapp}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-green-500 text-white text-center px-4 py-2 rounded"
+              className="bg-green-500 hover:bg-green-600 transition text-white text-center px-4 py-2 rounded flex items-center justify-center gap-2"
             >
-              💬 WhatsApp
+              <MessageCircleMore size={18} /> WhatsApp
             </a>
           )}
         </div>
+      ) : (
+        <p className="text-sm text-gray-500 mb-24">📭 Nessun contatto disponibile</p>
       )}
-
 
       <BottomNav />
     </div>
