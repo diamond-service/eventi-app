@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
+import { Phone, MessageCircle, Eye, MapPin, Calendar, CreditCard, Utensils } from 'lucide-react';
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -29,52 +30,68 @@ export default function EventDetails() {
   if (!event) return <div className="p-6 text-center">⏳ Caricamento evento...</div>;
 
   return (
-    <div className="p-6 max-w-2xl mx-auto space-y-4 pb-24">
+    <div className="pb-24 max-w-2xl mx-auto p-4 space-y-4">
+      {/* Immagine evento */}
       {event.image && (
-        <div className="w-full h-64 bg-white rounded-xl shadow overflow-hidden">
+        <div className="w-full h-64 rounded-xl overflow-hidden shadow">
           <img
             src={event.image}
             alt={event.title}
-            className="h-full w-full object-cover"
+            className="w-full h-full object-cover"
           />
         </div>
       )}
 
+      {/* Titolo, data, location */}
       <h1 className="text-3xl font-bold">{event.title}</h1>
-      <p className="text-sm text-gray-500">{event.date} - {event.location}</p>
-      <p className="text-sm text-gray-400">👁️ {event.views || 0} visualizzazioni</p>
+      <p className="flex items-center text-sm text-gray-500 gap-2">
+        <Calendar size={16} /> {event.date} | <MapPin size={16} /> {event.location}
+      </p>
 
+      {/* Visualizzazioni */}
+      <p className="flex items-center text-sm text-gray-400 gap-1">
+        <Eye size={16} /> {event.views || 0} visualizzazioni
+      </p>
+
+      {/* Prezzo */}
       {event.price && (
-        <p className="text-sm text-gray-700">💰 Prezzo: <b>{event.price}€</b></p>
-      )}
-
-      {event.dinnerIncluded && (
-        <p className="text-sm text-gray-700">
-          🍽️ Cena inclusa: <b>{event.dinnerPrice ? `${event.dinnerPrice}€` : 'Compresa'}</b>
+        <p className="flex items-center text-gray-700 gap-2">
+          <CreditCard size={16} /> <b>{event.price}€</b>
         </p>
       )}
 
-      <p className="text-gray-700">{event.description}</p>
+      {/* Cena */}
+      {event.dinnerIncluded && (
+        <p className="flex items-center text-gray-700 gap-2">
+          <Utensils size={16} />
+          Cena inclusa: <b>{event.dinnerPrice ? `${event.dinnerPrice}€` : 'Compresa'}</b>
+        </p>
+      )}
 
+      {/* Descrizione */}
+      <p className="text-gray-700 whitespace-pre-line">{event.description}</p>
+
+      {/* Mappa */}
       {event.mapUrl && (
-        <div>
+        <div className="rounded-xl overflow-hidden border mt-4">
           <iframe
             src={event.mapUrl}
-            className="w-full h-64 rounded-xl border"
-            allowFullScreen=""
+            className="w-full h-64"
+            allowFullScreen
             loading="lazy"
             title="Mappa evento"
           />
         </div>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* Pulsanti contatto */}
+      <div className="flex flex-col sm:flex-row gap-4 mt-6">
         {event.phone && (
           <a
             href={`tel:${event.phone}`}
-            className="bg-green-600 text-white text-center px-4 py-2 rounded"
+            className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded shadow"
           >
-            📞 Chiama
+            <Phone size={18} /> Chiama
           </a>
         )}
         {event.whatsapp && (
@@ -82,13 +99,14 @@ export default function EventDetails() {
             href={`https://wa.me/${event.whatsapp}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-green-500 text-white text-center px-4 py-2 rounded"
+            className="flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow"
           >
-            💬 WhatsApp
+            <MessageCircle size={18} /> WhatsApp
           </a>
         )}
       </div>
 
+      {/* Barra in basso */}
       <BottomNav />
     </div>
   );
