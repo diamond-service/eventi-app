@@ -1,3 +1,4 @@
+// src/pages/AdminPanel.jsx
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
@@ -8,17 +9,7 @@ export default function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
-    title: '',
-    date: '',
-    location: '',
-    description: '',
-    mapUrl: '',
-    phone: '',
-    whatsapp: '',
-    image: '',
-    price: '',
-    dinnerIncluded: false,
-    dinnerPrice: ''
+    title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
   });
 
   const navigate = useNavigate();
@@ -27,9 +18,8 @@ export default function AdminPanel() {
     const checkAuthAndLoad = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) console.error('Errore auth:', error);
-      if (!data?.user) {
-        navigate('/admin-login');
-      } else {
+      if (!data?.user) navigate('/admin-login');
+      else {
         setUser(data.user);
         loadEvents();
       }
@@ -39,11 +29,7 @@ export default function AdminPanel() {
 
   const loadEvents = async () => {
     const { data, error } = await supabase.from('events').select('*');
-    if (error) {
-      console.error('Errore caricamento eventi:', error.message);
-    } else {
-      setEvents(data || []);
-    }
+    if (!error) setEvents(data || []);
   };
 
   const handleSubmit = async () => {
@@ -51,38 +37,25 @@ export default function AdminPanel() {
       ? await supabase.from('events').update(form).eq('id', editingId)
       : await supabase.from('events').insert([form]);
 
-    if (error) {
-      alert('❌ Errore: ' + error.message);
-    } else {
+    if (!error) {
       setForm({
         title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
       });
       setEditingId(null);
       loadEvents();
+    } else {
+      alert('❌ Errore: ' + error.message);
     }
   };
 
   const handleEdit = (event) => {
-    setForm({
-      title: event.title || '',
-      date: event.date || '',
-      location: event.location || '',
-      description: event.description || '',
-      mapUrl: event.mapUrl || '',
-      phone: event.phone || '',
-      whatsapp: event.whatsapp || '',
-      image: event.image || '',
-      price: event.price || '',
-      dinnerIncluded: event.dinnerIncluded || false,
-      dinnerPrice: event.dinnerPrice || ''
-    });
+    setForm(event);
     setEditingId(event.id);
   };
 
   const handleDelete = async (id) => {
     const { error } = await supabase.from('events').delete().eq('id', id);
-    if (error) alert('❌ Errore eliminazione: ' + error.message);
-    else loadEvents();
+    if (!error) loadEvents();
   };
 
   const handleLogout = async () => {
@@ -93,40 +66,32 @@ export default function AdminPanel() {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const fileName = `${Date.now()}-${file.name}`;
     const { data, error } = await supabase.storage.from('eventi').upload(fileName, file);
-
     if (!error) {
-      const { data: publicUrlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
-      setForm({ ...form, image: publicUrlData.publicUrl });
+      const { data: urlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
+      setForm({ ...form, image: urlData.publicUrl });
     } else {
-      alert('❌ Errore upload immagine');
+      alert('Errore upload immagine');
     }
   };
 
-  if (!user) {
-    return (
-      <div className="text-center p-8">
-        <p className="text-gray-500">🔐 Controllo autenticazione in corso...</p>
-      </div>
-    );
-  }
+  if (!user) return <div className="p-8 text-center text-gray-500">🔐 Autenticazione in corso...</div>;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">🎛️ Pannello Admin</h1>
         <div className="flex gap-2">
-          <button className="text-sm text-red-600 underline" onClick={handleLogout}>🔓 Logout</button>
+          <button onClick={handleLogout} className="text-sm text-red-600 underline">🔓 Logout</button>
           <Link to="/" className="text-sm text-blue-600 underline">🏠 Home</Link>
         </div>
       </div>
 
-      <p className="text-green-600 mb-4">✅ Sei loggato come <b>{user.email}</b></p>
+      <p className="text-green-600 mb-4">✅ Loggato come <b>{user.email}</b></p>
 
-      <div className="bg-white p-4 rounded shadow mb-6 space-y-2">
-        <h2 className="text-lg font-semibold">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
+      <div className="bg-white p-4 rounded shadow mb-6">
+        <h2 className="text-lg font-semibold mb-2">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
 
         {Object.entries(form).map(([key, value]) => (
           key !== 'image' && key !== 'dinnerIncluded' && (
@@ -140,14 +105,14 @@ export default function AdminPanel() {
           )
         ))}
 
-        <div className="flex items-center gap-2 mb-2">
+        <label className="flex items-center space-x-2 mb-2">
           <input
             type="checkbox"
             checked={form.dinnerIncluded}
             onChange={(e) => setForm({ ...form, dinnerIncluded: e.target.checked })}
           />
-          <label>Cena Inclusa</label>
-        </div>
+          <span>🍽️ Cena inclusa</span>
+        </label>
 
         <input
           type="file"
@@ -160,37 +125,26 @@ export default function AdminPanel() {
           <img src={form.image} alt="Anteprima" className="w-full h-48 object-cover rounded mb-2" />
         )}
 
-        <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={handleSubmit}>
+        <button className="bg-blue-600 text-white px-4 py-2 rounded w-full">
           {editingId ? '💾 Salva Modifiche' : '➕ Aggiungi Evento'}
         </button>
       </div>
 
       <div className="space-y-4">
-        {events.length === 0 ? (
-          <p className="text-gray-500">📭 Nessun evento disponibile.</p>
-        ) : (
-          events.map((event) => (
-            <div key={event.id} className="bg-gray-100 p-4 rounded shadow flex justify-between items-center">
-              <div className="w-full">
-                <h3 className="font-semibold">{event.title}</h3>
-                <p className="text-sm text-gray-600">{event.date} - {event.location}</p>
-                {event.price && <p className="text-sm text-gray-500">💰 Prezzo: {event.price}€</p>}
-                {event.dinnerIncluded && <p className="text-sm text-gray-500">🍽️ Cena: {event.dinnerPrice || 'Inclusa'}</p>}
-                {event.image && (
-                  <img src={event.image} alt={event.title} className="w-full h-32 object-cover rounded mt-2" />
-                )}
-              </div>
-              <div className="flex flex-col gap-2 ml-4">
-                <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => handleEdit(event)}>
-                  ✏️ Modifica
-                </button>
-                <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(event.id)}>
-                  🗑️ Elimina
-                </button>
-              </div>
+        {events.map((event) => (
+          <div key={event.id} className="bg-gray-100 p-4 rounded shadow flex justify-between items-start">
+            <div className="w-full">
+              <h3 className="text-lg font-semibold">{event.title}</h3>
+              <p className="text-sm text-gray-600">{event.date} - {event.location}</p>
+              <p className="text-xs text-gray-500">👁️ {event.views || 0} visualizzazioni</p>
+              {event.image && <img src={event.image} alt={event.title} className="w-full h-24 object-cover mt-2 rounded" />}
             </div>
-          ))
-        )}
+            <div className="flex flex-col gap-2 ml-4">
+              <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={() => handleEdit(event)}>✏️</button>
+              <button className="bg-red-500 text-white px-3 py-1 rounded" onClick={() => handleDelete(event.id)}>🗑️</button>
+            </div>
+          </div>
+        ))}
       </div>
 
       <BottomNav />
