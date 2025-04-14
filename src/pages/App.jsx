@@ -5,6 +5,7 @@ import BottomNav from '../components/BottomNav';
 
 export default function App() {
   const [events, setEvents] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -12,14 +13,18 @@ export default function App() {
       if (error) {
         console.error('Errore nel caricamento eventi:', error.message);
       } else {
-        setEvents(data);
+        setEvents(data || []);
       }
     };
     fetchEvents();
   }, []);
 
+  // Estrai categorie uniche
+  const categorie = [...new Set(events.map(e => e.category).filter(Boolean))];
+
   return (
     <div className="p-4 max-w-3xl mx-auto">
+      {/* Titolo e icona */}
       <div className="flex items-center gap-3 mb-6">
         <svg className="w-8 h-8 text-red-600 animate-bounce" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l-2 2m12 0l-2-2v13m-6 0h.01M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -29,25 +34,52 @@ export default function App() {
         </h1>
       </div>
 
+      {/* Filtri categoria */}
+      {categorie.length > 0 && (
+        <div className="flex gap-2 flex-wrap mb-4">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={`px-3 py-1 rounded-full text-sm transition ${!selectedCategory ? 'bg-red-600 text-white' : 'bg-gray-200'}`}
+          >
+            Tutti
+          </button>
+          {categorie.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1 rounded-full text-sm transition ${selectedCategory === cat ? 'bg-red-600 text-white' : 'bg-gray-200'}`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Eventi */}
       {events.length === 0 && <p className="text-gray-500">Nessun evento disponibile.</p>}
 
-      {events.map((event) => (
-        <Link to={`/evento/${event.id}`} key={event.id}>
-          <div className="bg-white dark:bg-gray-800 border rounded-2xl shadow-md p-4 mb-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
-            {event.image && (
-              <img
-                src={event.image}
-                alt={event.title}
-                className="w-full h-48 object-cover rounded-xl mb-3 shadow-sm"
-              />
-            )}
-            <h2 className="text-xl font-semibold">{event.title}</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
-              {event.date} - {event.location}
-            </p>
-          </div>
-        </Link>
-      ))}
+      {events
+        .filter((e) => !selectedCategory || e.category === selectedCategory)
+        .map((event) => (
+          <Link to={`/evento/${event.id}`} key={event.id}>
+            <div className="bg-white dark:bg-gray-800 border rounded-2xl shadow-md p-4 mb-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+              {event.image && (
+                <img
+                  src={event.image}
+                  alt={event.title}
+                  className="w-full h-48 object-cover rounded-xl mb-3 shadow-sm"
+                />
+              )}
+              <h2 className="text-xl font-semibold">{event.title}</h2>
+              {event.category && (
+                <p className="text-sm text-blue-600 mb-1">📂 {event.category}</p>
+              )}
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                {event.date} - {event.location}
+              </p>
+            </div>
+          </Link>
+        ))}
 
       <BottomNav />
     </div>
