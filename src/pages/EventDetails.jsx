@@ -27,11 +27,13 @@ export default function EventDetails() {
     load();
   }, [id]);
 
-  if (!event) return <div className="p-6 text-center">⏳ Caricamento evento...</div>;
+  if (!event) {
+    return <div className="p-6 text-center text-gray-500">⏳ Caricamento evento...</div>;
+  }
 
   return (
     <div className="pb-24 max-w-2xl mx-auto p-4 space-y-4">
-      {/* Immagine evento */}
+      {/* Immagine */}
       {event.image && (
         <div className="w-full h-64 rounded-xl overflow-hidden shadow">
           <img
@@ -42,29 +44,32 @@ export default function EventDetails() {
         </div>
       )}
 
-      {/* Titolo, data, location */}
+      {/* Titolo e info */}
       <h1 className="text-3xl font-bold">{event.title}</h1>
-      <p className="flex items-center text-sm text-gray-500 gap-2">
-        <Calendar size={16} /> {event.date} | <MapPin size={16} /> {event.location}
-      </p>
 
-      {/* Visualizzazioni */}
-      <p className="flex items-center text-sm text-gray-400 gap-1">
-        <Eye size={16} /> {event.views || 0} visualizzazioni
-      </p>
+      <div className="flex flex-wrap gap-4 text-sm text-gray-500 items-center">
+        <span className="flex items-center gap-1">
+          <Calendar size={16} /> {event.date}
+        </span>
+        <span className="flex items-center gap-1">
+          <MapPin size={16} /> {event.location}
+        </span>
+        <span className="flex items-center gap-1 text-gray-400">
+          <Eye size={16} /> {event.views || 0} visualizzazioni
+        </span>
+      </div>
 
-      {/* Prezzo */}
+      {/* Prezzi */}
       {event.price && (
-        <p className="flex items-center text-gray-700 gap-2">
-          <CreditCard size={16} /> <b>{event.price}€</b>
+        <p className="flex items-center text-gray-700 gap-2 mt-1">
+          <CreditCard size={16} /> <strong>{event.price}€</strong>
         </p>
       )}
 
-      {/* Cena */}
       {event.dinnerIncluded && (
         <p className="flex items-center text-gray-700 gap-2">
           <Utensils size={16} />
-          Cena inclusa: <b>{event.dinnerPrice ? `${event.dinnerPrice}€` : 'Compresa'}</b>
+          Cena inclusa: <strong>{event.dinnerPrice ? `${event.dinnerPrice}€` : 'Compresa'}</strong>
         </p>
       )}
 
@@ -84,29 +89,31 @@ export default function EventDetails() {
         </div>
       )}
 
-      {/* Pulsanti contatto */}
-      <div className="flex flex-col sm:flex-row gap-4 mt-6">
-        {event.phone && (
-          <a
-            href={`tel:${event.phone}`}
-            className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded shadow"
-          >
-            <Phone size={18} /> Chiama
-          </a>
-        )}
-        {event.whatsapp && (
-          <a
-            href={`https://wa.me/${event.whatsapp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow"
-          >
-            <MessageCircle size={18} /> WhatsApp
-          </a>
-        )}
-      </div>
+      {/* Contatti */}
+      {(event.phone || event.whatsapp) && (
+        <div className="flex flex-col sm:flex-row gap-4 mt-6">
+          {event.phone && (
+            <a
+              href={`tel:${event.phone}`}
+              className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700"
+            >
+              <Phone size={18} /> Chiama
+            </a>
+          )}
+          {event.whatsapp && (
+            <a
+              href={`https://wa.me/${event.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600"
+            >
+              <MessageCircle size={18} /> WhatsApp
+            </a>
+          )}
+        </div>
+      )}
 
-      {/* Barra in basso */}
+      {/* Navigazione inferiore */}
       <BottomNav />
     </div>
   );
