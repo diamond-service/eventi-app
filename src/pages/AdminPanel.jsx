@@ -11,7 +11,7 @@ export default function AdminPanel() {
     title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
   });
 
-  const categorieDisponibili = ['Ballo Latino', 'Kizomba', 'Salsa', 'Concerti', 'Dj Set'];
+  const categorieDisponibili = ['Ballo Latino Americano', 'Kizomba', 'Salsa', 'Piano Bar', 'Musica Live', 'Concerti', 'Dj Set'];
   const navigate = useNavigate();
 
   useEffect(() => {
