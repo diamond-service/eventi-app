@@ -8,9 +8,10 @@ export default function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
-    title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
+    title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
   });
 
+  const categorieDisponibili = ['Ballo Latino', 'Kizomba', 'Salsa', 'Concerti', 'Dj Set'];
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function AdminPanel() {
 
     if (!error) {
       setForm({
-        title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
+        title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
       });
       setEditingId(null);
       loadEvents();
@@ -93,7 +94,7 @@ export default function AdminPanel() {
         <h2 className="text-lg font-semibold mb-2">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
 
         {Object.entries(form).map(([key, value]) => (
-          key !== 'image' && key !== 'dinnerIncluded' && (
+          key !== 'image' && key !== 'dinnerIncluded' && key !== 'category' && (
             <input
               key={key}
               className="w-full p-2 border rounded mb-2"
@@ -103,6 +104,26 @@ export default function AdminPanel() {
             />
           )
         ))}
+
+        {/* Categoria: select + input */}
+        <select
+          className="w-full p-2 border rounded mb-2 bg-white"
+          value={form.category || ''}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+        >
+          <option value="">-- Seleziona Categoria --</option>
+          {categorieDisponibili.map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        <input
+          type="text"
+          className="w-full p-2 border rounded mb-2"
+          placeholder="Oppure scrivi una nuova categoria"
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+        />
 
         <label className="flex items-center space-x-2 mb-2">
           <input
