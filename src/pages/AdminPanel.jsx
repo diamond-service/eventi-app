@@ -8,7 +8,7 @@ export default function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
-    title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
+    title: '', date: '', location: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
   });
 
   const navigate = useNavigate();
