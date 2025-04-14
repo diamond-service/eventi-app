@@ -18,7 +18,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/preferiti" element={<Favorites />} />
-        <Route path="/mappa" element={<MapPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
