@@ -46,6 +46,11 @@ export default function EventDetails() {
 
       {/* Titolo e info */}
       <h1 className="text-3xl font-bold">{event.title}</h1>
+      
+      {event.category && (
+        <p className="text-sm text-gray-500">📌 Categoria: {event.category}</p>
+      )}
+
 
       <div className="flex flex-wrap gap-4 text-sm text-gray-500 items-center">
         <span className="flex items-center gap-1">
