@@ -8,10 +8,10 @@ export default function AdminPanel() {
   const [events, setEvents] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
-    title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
+    title: '', date: '', location: '', category: '', description: '', mapUrl: '',
+    phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
   });
 
-  const categorieDisponibili = ['Ballo Latino Americano', 'Kizomba', 'Salsa', 'Piano Bar', 'Musica Live', 'Concerti', 'Dj Set'];
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,7 +39,8 @@ export default function AdminPanel() {
 
     if (!error) {
       setForm({
-        title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
+        title: '', date: '', location: '', category: '', description: '', mapUrl: '',
+        phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
       });
       setEditingId(null);
       loadEvents();
@@ -66,14 +67,19 @@ export default function AdminPanel() {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const fileName = `${Date.now()}-${file.name}`;
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+
     const { data, error } = await supabase.storage.from('eventi').upload(fileName, file);
-    if (!error) {
-      const { data: urlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
-      setForm({ ...form, image: urlData.publicUrl });
-    } else {
-      alert('Errore upload immagine');
+
+    if (error) {
+      alert('❌ Errore upload immagine: ' + error.message);
+      return;
     }
+
+    const { data: urlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
+    setForm({ ...form, image: urlData.publicUrl });
   };
 
   if (!user) return <div className="p-8 text-center text-gray-500">🔐 Autenticazione in corso...</div>;
@@ -94,7 +100,7 @@ export default function AdminPanel() {
         <h2 className="text-lg font-semibold mb-2">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
 
         {Object.entries(form).map(([key, value]) => (
-          key !== 'image' && key !== 'dinnerIncluded' && key !== 'category' && (
+          key !== 'image' && key !== 'dinnerIncluded' && (
             <input
               key={key}
               className="w-full p-2 border rounded mb-2"
@@ -104,26 +110,6 @@ export default function AdminPanel() {
             />
           )
         ))}
-
-        {/* Categoria: select + input */}
-        <select
-          className="w-full p-2 border rounded mb-2 bg-white"
-          value={form.category || ''}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-        >
-          <option value="">-- Seleziona Categoria --</option>
-          {categorieDisponibili.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
-
-        <input
-          type="text"
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Oppure scrivi una nuova categoria"
-          value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-        />
 
         <label className="flex items-center space-x-2 mb-2">
           <input
@@ -145,7 +131,7 @@ export default function AdminPanel() {
           <img src={form.image} alt="Anteprima" className="w-full h-48 object-cover rounded mb-2" />
         )}
 
-        <button className="bg-blue-600 text-white px-4 py-2 rounded w-full">
+        <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded w-full">
           {editingId ? '💾 Salva Modifiche' : '➕ Aggiungi Evento'}
         </button>
       </div>
