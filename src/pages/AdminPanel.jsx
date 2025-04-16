@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
@@ -40,10 +39,6 @@ export default function AdminPanel() {
   };
 
   const handleSubmit = async () => {
-    if (form.category && !categories.find(c => c.name === form.category)) {
-      await supabase.from('categories').insert({ name: form.category });
-    }
-
     const { error } = editingId
       ? await supabase.from('events').update(form).eq('id', editingId)
       : await supabase.from('events').insert([form]);
@@ -54,7 +49,6 @@ export default function AdminPanel() {
       });
       setEditingId(null);
       loadEvents();
-      loadCategories();
     } else {
       alert('❌ Errore: ' + error.message);
     }
@@ -105,26 +99,23 @@ export default function AdminPanel() {
       <div className="bg-white p-4 rounded shadow mb-6">
         <h2 className="text-lg font-semibold mb-2">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
 
+        {/* Dropdown per categoria */}
         <select
+          className="w-full p-2 border rounded mb-2 bg-white"
           value={form.category}
           onChange={(e) => setForm({ ...form, category: e.target.value })}
-          className="w-full p-2 border rounded mb-2"
         >
           <option value="">-- Seleziona categoria --</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.name}>{cat.name}</option>
           ))}
+          {form.category && !categories.find(cat => cat.name === form.category) && (
+            <option value={form.category}>➕ {form.category}</option>
+          )}
         </select>
 
-        <input
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Oppure scrivi una nuova categoria"
-          value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-        />
-
         {Object.entries(form).map(([key, value]) => (
-          !['image', 'dinnerIncluded', 'category'].includes(key) && (
+          key !== 'image' && key !== 'dinnerIncluded' && key !== 'category' && (
             <input
               key={key}
               className="w-full p-2 border rounded mb-2"
