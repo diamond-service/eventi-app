@@ -72,15 +72,29 @@ export default function AdminPanel() {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const fileName = `${Date.now()}-${file.name}`;
-    const { data, error } = await supabase.storage.from('eventi').upload(fileName, file);
-    if (!error) {
-      const { data: urlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
-      setForm({ ...form, image: urlData.publicUrl });
-    } else {
-      alert('Errore upload immagine');
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase
+      .storage
+      .from('eventi')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+  
+    if (uploadError) {
+      console.error('❌ Errore upload:', uploadError.message);
+      alert('❌ Errore upload immagine');
+      return;
     }
+  
+    const { data } = supabase.storage.from('eventi').getPublicUrl(fileName);
+    setForm({ ...form, image: data.publicUrl });
+    alert('✅ Immagine caricata con successo!');
   };
+
 
   if (!user) return <div className="p-8 text-center text-gray-500">🔐 Autenticazione in corso...</div>;
 
