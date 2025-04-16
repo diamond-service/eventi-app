@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
@@ -6,10 +7,10 @@ import { useNavigate, Link } from 'react-router-dom';
 export default function AdminPanel() {
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
-    title: '', date: '', location: '', category: '', description: '', mapUrl: '',
-    phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
+    title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
   });
 
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function AdminPanel() {
       else {
         setUser(data.user);
         loadEvents();
+        loadCategories();
       }
     };
     checkAuthAndLoad();
@@ -32,18 +34,27 @@ export default function AdminPanel() {
     if (!error) setEvents(data || []);
   };
 
+  const loadCategories = async () => {
+    const { data, error } = await supabase.from('categories').select('*');
+    if (!error) setCategories(data || []);
+  };
+
   const handleSubmit = async () => {
+    if (form.category && !categories.find(c => c.name === form.category)) {
+      await supabase.from('categories').insert({ name: form.category });
+    }
+
     const { error } = editingId
       ? await supabase.from('events').update(form).eq('id', editingId)
       : await supabase.from('events').insert([form]);
 
     if (!error) {
       setForm({
-        title: '', date: '', location: '', category: '', description: '', mapUrl: '',
-        phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
+        title: '', date: '', location: '', category: '', description: '', mapUrl: '', phone: '', whatsapp: '', image: '', price: '', dinnerIncluded: false, dinnerPrice: ''
       });
       setEditingId(null);
       loadEvents();
+      loadCategories();
     } else {
       alert('❌ Errore: ' + error.message);
     }
@@ -67,19 +78,14 @@ export default function AdminPanel() {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-
+    const fileName = `${Date.now()}-${file.name}`;
     const { data, error } = await supabase.storage.from('eventi').upload(fileName, file);
-
-    if (error) {
-      alert('❌ Errore upload immagine: ' + error.message);
-      return;
+    if (!error) {
+      const { data: urlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
+      setForm({ ...form, image: urlData.publicUrl });
+    } else {
+      alert('Errore upload immagine');
     }
-
-    const { data: urlData } = supabase.storage.from('eventi').getPublicUrl(fileName);
-    setForm({ ...form, image: urlData.publicUrl });
   };
 
   if (!user) return <div className="p-8 text-center text-gray-500">🔐 Autenticazione in corso...</div>;
@@ -99,8 +105,26 @@ export default function AdminPanel() {
       <div className="bg-white p-4 rounded shadow mb-6">
         <h2 className="text-lg font-semibold mb-2">{editingId ? 'Modifica Evento' : 'Crea Nuovo Evento'}</h2>
 
+        <select
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+          className="w-full p-2 border rounded mb-2"
+        >
+          <option value="">-- Seleziona categoria --</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.name}>{cat.name}</option>
+          ))}
+        </select>
+
+        <input
+          className="w-full p-2 border rounded mb-2"
+          placeholder="Oppure scrivi una nuova categoria"
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+        />
+
         {Object.entries(form).map(([key, value]) => (
-          key !== 'image' && key !== 'dinnerIncluded' && (
+          !['image', 'dinnerIncluded', 'category'].includes(key) && (
             <input
               key={key}
               className="w-full p-2 border rounded mb-2"
@@ -131,7 +155,7 @@ export default function AdminPanel() {
           <img src={form.image} alt="Anteprima" className="w-full h-48 object-cover rounded mb-2" />
         )}
 
-        <button onClick={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded w-full">
+        <button className="bg-blue-600 text-white px-4 py-2 rounded w-full" onClick={handleSubmit}>
           {editingId ? '💾 Salva Modifiche' : '➕ Aggiungi Evento'}
         </button>
       </div>
