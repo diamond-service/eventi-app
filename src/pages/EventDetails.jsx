@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
 import { Phone, MessageCircle, Eye, MapPin, Calendar, CreditCard, Utensils, X } from 'lucide-react';
+import { Share2 } from 'lucide-react';
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -28,9 +29,26 @@ export default function EventDetails() {
     load();
   }, [id]);
 
-  if (!event) {
-    return <div className="p-6 text-center text-gray-500">⏳ Caricamento evento...</div>;
-  }
+  if (!event) return <div className="p-6 text-center text-gray-500">⏳ Caricamento evento...</div>;
+
+  const handleShare = async () => {
+    const shareData = {
+      title: event.title,
+      text: `Guarda questo evento: ${event.title}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.error("Errore condivisione:", error);
+      }
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      alert("📋 Link copiato negli appunti!");
+    }
+  };
 
   return (
     <div className="pb-24 max-w-2xl mx-auto p-4 space-y-4 relative">
@@ -116,6 +134,7 @@ export default function EventDetails() {
         </div>
       )}
 
+      {/* Contatti */}
       {(event.phone || event.whatsapp) && (
         <div className="flex flex-col sm:flex-row gap-4 mt-6">
           {event.phone && (
@@ -138,6 +157,16 @@ export default function EventDetails() {
           )}
         </div>
       )}
+
+      {/* Pulsante Condividi */}
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={handleShare}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700"
+        >
+          <Share2 size={18} /> Condividi evento
+        </button>
+      </div>
 
       <BottomNav />
     </div>
