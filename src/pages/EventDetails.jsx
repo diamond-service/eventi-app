@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
-import { Phone, MessageCircle, Eye, MapPin, Calendar, CreditCard, Utensils } from 'lucide-react';
+import { Phone, MessageCircle, Eye, MapPin, Calendar, CreditCard, Utensils, X } from 'lucide-react';
 
 export default function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -32,10 +33,13 @@ export default function EventDetails() {
   }
 
   return (
-    <div className="pb-24 max-w-2xl mx-auto p-4 space-y-4">
-      {/* Immagine */}
+    <div className="pb-24 max-w-2xl mx-auto p-4 space-y-4 relative">
+      {/* Immagine cliccabile */}
       {event.image && (
-        <div className="w-full h-64 rounded-xl overflow-hidden shadow">
+        <div
+          className="w-full h-64 rounded-xl overflow-hidden shadow cursor-pointer transition-transform hover:scale-105"
+          onClick={() => setShowImageModal(true)}
+        >
           <img
             src={event.image}
             alt={event.title}
@@ -44,13 +48,34 @@ export default function EventDetails() {
         </div>
       )}
 
+      {/* MODALE IMMAGINE INGRANDITA */}
+      {showImageModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center"
+          onClick={() => setShowImageModal(false)}
+        >
+          <div className="relative animate-zoom-in" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="absolute -top-4 -right-4 bg-white p-1 rounded-full shadow hover:bg-red-100"
+              onClick={() => setShowImageModal(false)}
+            >
+              <X size={24} className="text-red-600" />
+            </button>
+            <img
+              src={event.image}
+              alt="Anteprima"
+              className="max-w-[90vw] max-h-[90vh] rounded-xl shadow-xl"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Titolo e info */}
       <h1 className="text-3xl font-bold">{event.title}</h1>
-      
+
       {event.category && (
         <p className="text-sm text-gray-500">📌 Categoria: {event.category}</p>
       )}
-
 
       <div className="flex flex-wrap gap-4 text-sm text-gray-500 items-center">
         <span className="flex items-center gap-1">
@@ -64,7 +89,6 @@ export default function EventDetails() {
         </span>
       </div>
 
-      {/* Prezzi */}
       {event.price && (
         <p className="flex items-center text-gray-700 gap-2 mt-1">
           <CreditCard size={16} /> <strong>{event.price}€</strong>
@@ -78,10 +102,8 @@ export default function EventDetails() {
         </p>
       )}
 
-      {/* Descrizione */}
       <p className="text-gray-700 whitespace-pre-line">{event.description}</p>
 
-      {/* Mappa */}
       {event.mapUrl && (
         <div className="rounded-xl overflow-hidden border mt-4">
           <iframe
@@ -94,7 +116,6 @@ export default function EventDetails() {
         </div>
       )}
 
-      {/* Contatti */}
       {(event.phone || event.whatsapp) && (
         <div className="flex flex-col sm:flex-row gap-4 mt-6">
           {event.phone && (
@@ -118,7 +139,6 @@ export default function EventDetails() {
         </div>
       )}
 
-      {/* Navigazione inferiore */}
       <BottomNav />
     </div>
   );
