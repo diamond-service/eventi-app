@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient';
 import BottomNav from '../components/BottomNav';
 import { Phone, MessageCircle, Eye, MapPin, Calendar, CreditCard, Utensils, X } from 'lucide-react';
 import { Share2 } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -52,6 +53,12 @@ export default function EventDetails() {
 
   return (
     <div className="pb-24 max-w-2xl mx-auto p-4 space-y-4 relative">
+      {/* Logo + Titolo */}
+      <div className="flex items-center gap-3 mb-4">
+        <img src={logo} alt="Eventi Livorno" className="h-10" />
+        <h1 className="text-xl font-bold text-gray-800 dark:text-white">Eventi Livorno</h1>
+      </div>
+
       {/* Immagine cliccabile */}
       {event.image && (
         <div
