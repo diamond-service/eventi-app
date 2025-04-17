@@ -7,3 +7,19 @@
 body {
   font-family: 'Arial', sans-serif;
 }
+
+/* 🔍 Animazione zoom-in per modale immagine */
+@keyframes zoom-in {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-zoom-in {
+  animation: zoom-in 0.25s ease-out;
+}
